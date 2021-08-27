@@ -42,17 +42,35 @@ function getLocalCoords()
 end
 
 function localMove(x, y, z)
+    b = true
     for i=1, math.abs(x), 1 do
-        if x > 0 then turtle.forward() else turtle.back(); end
+        if x > 0 then b = turtle.forward() else b = turtle.back() end
+        if not b then
+            moveLocalCoords(i-1, 0, 0)
+            return false
+        end
     end
     turtle.turnRight()
     for i=1, math.abs(y), 1 do
-        if y > 0 then turtle.forward() else turtle.back(); end
+        if y > 0 then b = turtle.forward() else b = turtle.back() end
+        if not b then
+            moveLocalCoords(x, i-1, 0)
+            return false
+        end
     end
     turtle.turnLeft()
     for i=1, math.abs(z), 1 do
-        if z > 0 then turtle.up() else turtle.down(); end
+        if z > 0 then b = turtle.up() else b = turtle.down() end
+        if not b then
+            moveLocalCoords(x, y, i-1)
+            return false
+        end
     end
+    moveLocalCoords(x, y, z)
+    return true
+end
+
+function moveLocalCoords(x, y, z)
     coords = getLocalCoords()
     setLocalCoords(coords.x + x, coords.y + y, coords.z + z)
 end
@@ -60,3 +78,4 @@ end
 funcs = {}
 funcs['setLocalCoords'] = setLocalCoords
 funcs['getLocalCoords'] = getLocalCoords
+funcs['localMove'] = localMove

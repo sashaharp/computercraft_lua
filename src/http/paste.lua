@@ -5,10 +5,18 @@
 ---
 
 args = {...}
-local data = http.get(args[1])
 if fs.exists(args[2]) then
+    print('msg: existing file found - deleting')
     fs.delete(args[2])
 end
+local txt = ''
+while txt == '' do
+    local data = http.get(args[1])
+    txt = data.readAll()
+    data.close()
+end
+print("msg: file created - writing")
 local f = fs.open(args[2], 'w')
-f.write(data.readAll())
-data.close()
+f.write(txt)
+f.close()
+print("msg: job done")

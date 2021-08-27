@@ -18,7 +18,7 @@ f.close()
 
 r = requests.post(ip + "put", data=lua, headers=headers)
 
-str = 'http/paste.lua ' + ip + ' ' + args.filename
+str = 'http/paste ' + ip + ' ' + args.filename
 print(str)
 clip.copy(str)
 

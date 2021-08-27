@@ -5,4 +5,5 @@
 ---
 
 os.loadAPI("global/locator")
-locator.localMove(2, 2, 1)
+args = {...}
+
