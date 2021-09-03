@@ -5,5 +5,45 @@
 ---
 
 os.loadAPI("global/locator")
+os.loadAPI("global/inventory")
 args = {...}
 
+min = {}
+min.x = math.min(tonumber(args[2]), tonumber(args[5]))
+min.y = math.min(tonumber(args[3]), tonumber(args[6]))
+min.z = math.min(tonumber(args[4]), tonumber(args[7]))
+max = {}
+max.x = math.max(tonumber(args[2]), tonumber(args[5]))
+max.y = math.max(tonumber(args[3]), tonumber(args[6]))
+max.z = math.max(tonumber(args[4]), tonumber(args[7]))
+trees = {}
+trees.x = math.floor((max.x-min.x+1)/2)
+trees.y = math.floor((max.y-min.y+1)/2)
+
+
+if args[1]=='--free' then
+    locator.localMove(unpack(min))
+    sapling = inventory.contains('sapling')
+    if sapling > 1 then
+        turtle.select(sapling)
+        locator.localMove(0, 0, 1)
+        locator.localMove(1, 1, 0)
+        for y=1, trees.y do
+            for x=1, trees.x do
+                turtle.placeDown()
+                if x < trees.x then
+                    locator.localMove(-2+4*(y%2), 0, 0)
+                end
+            end
+            if y < trees.y then
+                locator.localMove(0, 2, 0)
+                locator.localRotate(2)
+            end
+        end
+        locator.moveHome()
+    else
+        print('err: no saplings provided!')
+    end
+else
+    print('err: not implemented!')
+end

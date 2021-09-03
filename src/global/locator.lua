@@ -41,7 +41,54 @@ function getLocalCoords()
     return data.localCoords
 end
 
+function setLocalRotation(r)
+    local f
+    local data
+    if not fs.exists('/data/') then
+        fs.makeDir('/data')
+        data = {}
+        data.rot = r
+        f = fs.open('/data/local', 'w')
+        f.write(textutils.serialize(data))
+        f.close()
+        return
+    end
+    f = fs.open('/data/local', 'r')
+    data = textutils.unserialize(f.readAll())
+    data.rot = r
+    f.close()
+    f = fs.open('/data/local', 'w')
+    f.write(textutils.serialize(data))
+    f.close()
+end
+
+function getLocalRotation()
+    local data
+    if fs.exists('/data/local') then
+        local f = fs.open('/data/local', 'r')
+        data = textutils.unserialize(f.readAll())
+        f.close()
+    end
+    return data.rot
+end
+
+function localRotate(r)
+    local lr = r%4
+    if lr <= 3 then
+        for n = 1, lr do
+            turtle.turnRight()
+        end
+    else
+        for n = lr, 4 do
+            turtle.turnLeft()
+        end
+    end
+    setLocalRotation((getLocalRotation()+lr)%4)
+end
+
 function localMove(x, y, z)
+    r = getLocalRotation()
+    localRotate(-1*getLocalRotation())
     b = true
     for i=1, math.abs(x), 1 do
         if x > 0 then b = turtle.forward() else b = turtle.back() end
@@ -50,7 +97,7 @@ function localMove(x, y, z)
             return false
         end
     end
-    turtle.turnRight()
+    localRotate(1)
     for i=1, math.abs(y), 1 do
         if y > 0 then b = turtle.forward() else b = turtle.back() end
         if not b then
@@ -58,7 +105,6 @@ function localMove(x, y, z)
             return false
         end
     end
-    turtle.turnLeft()
     for i=1, math.abs(z), 1 do
         if z > 0 then b = turtle.up() else b = turtle.down() end
         if not b then
@@ -66,6 +112,7 @@ function localMove(x, y, z)
             return false
         end
     end
+    localRotate(getLocalRotation()-1)
     moveLocalCoords(x, y, z)
     return true
 end
@@ -73,6 +120,12 @@ end
 function moveLocalCoords(x, y, z)
     coords = getLocalCoords()
     setLocalCoords(coords.x + x, coords.y + y, coords.z + z)
+end
+
+function moveHome()
+    pos = locator.getLocalCoords()
+    locator.localMove(-pos.x, -pos.y, -pos.z)
+    locator.localRotate(-1*locator.getLocalRotation())
 end
 
 funcs = {}

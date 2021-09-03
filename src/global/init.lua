@@ -8,3 +8,4 @@ if fs.exists('/data/') then
 end
 os.loadAPI('global/locator')
 locator.setLocalCoords(0, 0, 0)
+locator.setLocalRotation(0)
